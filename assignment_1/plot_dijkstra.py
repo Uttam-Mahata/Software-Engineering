@@ -25,12 +25,15 @@ def plot_time_data(filename):
     nodes = df['Number of Nodes']
     n_squared = (nodes**2)
     n_squared_log_n = (nodes**2 * np.log2(nodes)) #used log2 for better visualization
+    n_log_n = (nodes * np.log2(nodes))
 
     # Plot n^2 curve
     plt.plot(nodes, n_squared, linestyle='--', label='n^2 Scaled')
 
     # Plot n^2*log(n) curve
     plt.plot(nodes, n_squared_log_n, linestyle='-.', label='n^2*log(n) Scaled')
+
+    plt.plot(nodes, n_log_n, linestyle=':', label='n*log(n) Scaled')
 
 
     plt.title("Average Time vs. Number of Nodes with n^2 and n^2*log(n) Curves", fontsize=16)
@@ -44,4 +47,4 @@ def plot_time_data(filename):
     plt.show()
 
 if __name__ == "__main__":
-    plot_time_data("dijkstra_data.csv")  # Replace with the actual file name if different
+    plot_time_data("../dijkstra_data.csv")  # Replace with the actual file name if different
