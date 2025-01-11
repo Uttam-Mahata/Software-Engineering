@@ -47,4 +47,4 @@ def plot_time_data(filename):
     plt.show()
 
 if __name__ == "__main__":
-    plot_time_data("dijkstra_data.csv")  # Replace with the actual file name if different
+    plot_time_data("../dijkstra_data.csv")  # Replace with the actual file name if different

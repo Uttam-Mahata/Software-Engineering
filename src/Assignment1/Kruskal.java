@@ -113,8 +113,8 @@ public class Kruskal {
     public static void main(String[] args) {
         int maxNodes = 1500;
         double edgeProbability = 0.3;
-        int maxWeight = 10;
-        int numRuns = 10;
+        int maxWeight = 20;
+        int numRuns = 20;
         generateData(maxNodes, "kruskal_data.csv", edgeProbability, maxWeight, numRuns);
     }
 }

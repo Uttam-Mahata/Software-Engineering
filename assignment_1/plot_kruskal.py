@@ -48,4 +48,4 @@ def plot_kruskal_data(filename):
     plt.show()
 
 if __name__ == "__main__":
-    plot_kruskal_data("kruskal_data.csv") # Replace if needed
+    plot_kruskal_data("../kruskal_data.csv") # Replace if needed

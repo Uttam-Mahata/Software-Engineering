@@ -72,7 +72,7 @@ public class Knapsack {
 
 
     public static void main(String[] args) {
-        int maxItems = 500;
+        int maxItems = 7000;
         int maxCapacity = 100; // You can also vary this to see trends
         int maxWeight = 10;
         int maxValue = 20;
