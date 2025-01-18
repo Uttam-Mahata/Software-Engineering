@@ -56,8 +56,7 @@ public class MergeSort {
         }
     }
 
-
-   static int[] generateRandomArray(int size, int maxValue) {
+    static int[] generateRandomArray(int size, int maxValue) {
         int[] arr = new int[size];
         Random random = new Random();
         for (int i = 0; i < size; i++) {
