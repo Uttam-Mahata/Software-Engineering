@@ -1,53 +1,57 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
+from scipy.optimize import curve_fit
 
-def plot_prim_data(filename):
-    """
-    Plots Prim's algorithm data and theoretical complexity curves.
-    """
-    df = pd.read_csv(filename)
+# Read the CSV file
+df = pd.read_csv('prims_performance.csv')
 
-    # Convert columns to numeric
-    df['Number of Nodes'] = pd.to_numeric(df['Number of Nodes'])
-    df['Average Time (nanoseconds)'] = pd.to_numeric(df['Average Time (nanoseconds)'])
+# Create separate dataframes for different densities
+best_case = df[df['density'] == 0.2]
+avg_case = df[df['density'] == 0.5]
+worst_case = df[df['density'] == 0.8]
 
-    # Create the plot
-    plt.figure(figsize=(12, 8))
+# Define theoretical complexity functions
+def theoretical_complexity(n, a):
+    return a * n * np.log(n)  # O(V log V) for binary heap implementation
 
-    # Plot the measured data
-    plt.plot(df['Number of Nodes'], df['Average Time (nanoseconds)'], marker='o', linestyle='-', markersize=4, label="Prim's Measured Time")
+# Create plot
+plt.figure(figsize=(12, 8))
 
-    # Generate data for theoretical curves
-    nodes = df['Number of Nodes']
-    edges = (nodes * (nodes - 1)) / 2  # Maximum possible edges in a complete graph
-    n_log_n = edges * np.log2(nodes)
-    n_squared = nodes**2
-    n_squared_log_n = nodes**2 * np.log2(nodes)
+# Plot actual running times with both points and lines
+plt.plot(best_case['vertices'], best_case['execution_time'], 'o-', label='Best Case (Sparse)', color='green')
+plt.plot(avg_case['vertices'], avg_case['execution_time'], 'o-', label='Average Case', color='blue')
+plt.plot(worst_case['vertices'], worst_case['execution_time'], 'o-', label='Worst Case (Dense)', color='red')
 
-   # Scale theoretical curves
-    scale_nlogn = np.mean(df['Average Time (nanoseconds)'].head(10)) / np.mean(n_log_n.head(10))
-    scale_n2 = np.mean(df['Average Time (nanoseconds)'].head(10)) / np.mean(n_squared.head(10))
-    scale_n2logn = np.mean(df['Average Time (nanoseconds)'].head(10)) / np.mean(n_squared_log_n.head(10))
+# Fit and plot theoretical curves
+x = np.linspace(min(df['vertices']), max(df['vertices']), 100)
 
-    # Plot theoretical curves
-    plt.plot(nodes, scale_nlogn * n_log_n, linestyle='--', label="E log(V)")
-    plt.plot(nodes, scale_n2 * n_squared, linestyle='-.', label="V^2")
-    plt.plot(nodes, scale_n2logn*n_squared_log_n, linestyle=':', label = "V^2log(V)")
+# Best case
+popt_best, _ = curve_fit(theoretical_complexity, best_case['vertices'], best_case['execution_time'])
+plt.plot(x, theoretical_complexity(x, popt_best[0]), '--', color='green', label='Theoretical Best Case')
 
+# Average case
+popt_avg, _ = curve_fit(theoretical_complexity, avg_case['vertices'], avg_case['execution_time'])
+plt.plot(x, theoretical_complexity(x, popt_avg[0]), '--', color='blue', label='Theoretical Average Case')
 
+# Worst case
+popt_worst, _ = curve_fit(theoretical_complexity, worst_case['vertices'], worst_case['execution_time'])
+plt.plot(x, theoretical_complexity(x, popt_worst[0]), '--', color='red', label='Theoretical Worst Case')
 
-    # Plot
-    plt.title("Prim's Algorithm Runtime vs. Input Size", fontsize=16)
-    plt.xlabel("Number of Nodes", fontsize=14)
-    plt.ylabel("Average Time (nanoseconds)", fontsize=14)
-    plt.grid(True)
-    plt.xticks(fontsize=12)
-    plt.yticks(fontsize=12)
-    plt.legend(fontsize=12)
-    plt.tight_layout()
-    plt.show()
+plt.xlabel('Number of Vertices (V)')
+plt.ylabel('Execution Time (ms)')
+plt.title("Prim's Algorithm Performance Analysis")
+plt.legend()
+plt.grid(True)
+plt.show()
 
+# Calculate and print R-squared values to measure how well theoretical matches actual
+def r_squared(y_true, y_pred):
+    ss_res = np.sum((y_true - y_pred) ** 2)
+    ss_tot = np.sum((y_true - np.mean(y_true)) ** 2)
+    return 1 - (ss_res / ss_tot)
 
-if __name__ == "__main__":
-    plot_prim_data("prim_data.csv")  # Replace if needed
+print("\nR-squared values (how well theoretical matches actual):")
+print(f"Best case: {r_squared(best_case['execution_time'], theoretical_complexity(best_case['vertices'], popt_best[0])):.4f}")
+print(f"Average case: {r_squared(avg_case['execution_time'], theoretical_complexity(avg_case['vertices'], popt_avg[0])):.4f}")
+print(f"Worst case: {r_squared(worst_case['execution_time'], theoretical_complexity(worst_case['vertices'], popt_worst[0])):.4f}")

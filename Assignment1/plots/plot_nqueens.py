@@ -1,50 +1,41 @@
 import pandas as pd
-import matplotlib.pyplot as plt
 import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib.ticker import ScalarFormatter
+from math import factorial
 
-def plot_nqueens_data(filename):
-    """
-    Plots N-Queens algorithm data and theoretical complexity curves.
-    """
-    df = pd.read_csv(filename)
+# Read the CSV file
+df = pd.read_csv('nqueen_performance.csv')
 
-    # Convert columns to numeric
-    df['Input Size'] = pd.to_numeric(df['Input Size'])
-    df['Average Time (nanoseconds)'] = pd.to_numeric(df['Average Time (nanoseconds)'])
+# Convert nanoseconds to milliseconds
+df['execution_time'] = df['execution_time'] / 1_000_000
 
-    # Create the plot
-    plt.figure(figsize=(12, 8))
+# Calculate theoretical complexity (O(N!))
+# Scale factor to match actual times
+scale = df['execution_time'].max() / factorial(df['size'].max())
+theoretical_time = df['size'].apply(lambda x: factorial(x) * scale)
 
-    # Plot the measured data
-    plt.plot(df['Input Size'], df['Average Time (nanoseconds)'], marker='o', linestyle='-', markersize=4, label="N-Queens Measured Time")
+# Create the plot
+plt.figure(figsize=(12, 8))
 
-    # Generate data for theoretical curves
-    input_sizes = df['Input Size']
-    two_power_n = 2**input_sizes
-    n_factorial = [np.math.factorial(n) for n in input_sizes]
+# Plot actual times
+plt.plot(df['size'], df['execution_time'], 'bo-', label='Actual Time')
+plt.plot(df['size'], theoretical_time, 'r--', label='Theoretical Time (O(N!))')
 
-    # Scale theoretical curves
-    scale_2n = np.mean(df['Average Time (nanoseconds)'].head(10)) / np.mean(two_power_n[:10]) # scaling first 10 rows
-    scale_nfactorial = np.mean(df['Average Time (nanoseconds)'].head(10)) / np.mean(n_factorial[:10])
+plt.xlabel('Board Size (N)')
+plt.ylabel('Time (milliseconds)')
+plt.title('N-Queens Algorithm Performance Analysis')
+plt.legend()
+plt.grid(True)
 
+# Use logarithmic scale for better visualization
+plt.yscale('log')
+plt.gca().yaxis.set_major_formatter(ScalarFormatter())
 
-    # Plot theoretical curves
-    plt.plot(input_sizes, scale_2n * two_power_n, linestyle='--', label="O(2^n)")
-    plt.plot(input_sizes, scale_nfactorial, linestyle='-.', label="O(n!) Scaled")
+plt.savefig('nqueens_analysis.png')
+plt.close()
 
-
-    # Plot
-    plt.title("N-Queens Algorithm Runtime vs. Input Size", fontsize=16)
-    plt.xlabel("Input Size (N)", fontsize=14)
-    plt.ylabel("Average Time (nanoseconds)", fontsize=14)
-    plt.grid(True)
-    plt.xticks(fontsize=12)
-    plt.yticks(fontsize=12)
-    plt.yscale('log') # to visualize exponential curves properly
-    plt.legend(fontsize=12)
-    plt.tight_layout()
-    plt.show()
-
-
-if __name__ == "__main__":
-    plot_nqueens_data("nqueens_data.csv")  # Replace if needed
+# Calculate correlation between actual and theoretical times
+correlation = np.corrcoef(df['execution_time'], theoretical_time)[0,1]
+print("\nCorrelation Analysis:")
+print(f"Correlation between actual and theoretical times: {correlation:.4f}")
