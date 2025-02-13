@@ -1,47 +1,49 @@
 import pandas as pd
-import matplotlib.pyplot as plt
 import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib.ticker import ScalarFormatter
 
-def plot_floyd_warshall_data(filename):
-    """
-    Plots Floyd-Warshall algorithm data and theoretical complexity curves.
-    """
-    df = pd.read_csv(filename)
+# Read the CSV file
+df = pd.read_csv('floyd_warshall_times.csv')
 
-    # Convert columns to numeric
-    df['Number of Nodes'] = pd.to_numeric(df['Number of Nodes'])
-    df['Average Time (nanoseconds)'] = pd.to_numeric(df['Average Time (nanoseconds)'])
+# Calculate theoretical complexities (O(V^3))
+# Scale factor to match actual times
+scale_best = df['best_case'].max() / (df['size'].max() ** 3)
+scale_avg = df['average_case'].max() / (df['size'].max() ** 3)
+scale_worst = df['worst_case'].max() / (df['size'].max() ** 3)
 
-    # Create the plot
-    plt.figure(figsize=(12, 8))
+theoretical_best = df['size'].apply(lambda x: x**3 * scale_best)
+theoretical_avg = df['size'].apply(lambda x: x**3 * scale_avg)
+theoretical_worst = df['size'].apply(lambda x: x**3 * scale_worst)
 
-    # Plot the measured data
-    plt.plot(df['Number of Nodes'], df['Average Time (nanoseconds)'], marker='o', linestyle='-', markersize=4, label="Floyd-Warshall's Measured Time")
+# Create the plot
+plt.figure(figsize=(12, 8))
 
-     # Generate data for theoretical curves
-    nodes = df['Number of Nodes']
-    n_cubed = nodes**3
+# Plot actual times
+plt.plot(df['size'], df['best_case'], 'bo-', label='Best Case (Actual)')
+plt.plot(df['size'], df['average_case'], 'go-', label='Average Case (Actual)')
+plt.plot(df['size'], df['worst_case'], 'ro-', label='Worst Case (Actual)')
 
-    # Scale theoretical curves
-    scale_ncubed = np.mean(df['Average Time (nanoseconds)'].head(10)) / np.mean(n_cubed.head(10))
+# Plot theoretical curves
+plt.plot(df['size'], theoretical_best, 'b--', label='Best Case (Theoretical)')
+plt.plot(df['size'], theoretical_avg, 'g--', label='Average Case (Theoretical)')
+plt.plot(df['size'], theoretical_worst, 'r--', label='Worst Case (Theoretical)')
 
+plt.xlabel('Input Size (V)')
+plt.ylabel('Time (milliseconds)')
+plt.title('Floyd-Warshall Algorithm Performance Analysis')
+plt.legend()
+plt.grid(True)
 
-    # Plot theoretical curves
-    plt.plot(nodes, scale_ncubed* n_cubed, linestyle = '--', label = "O(n^3)")
+# Use logarithmic scale for better visualization
+plt.yscale('log')
+plt.gca().yaxis.set_major_formatter(ScalarFormatter())
 
+plt.savefig('floyd_warshall_analysis.png')
+plt.close()
 
-
-    # Plot
-    plt.title("Floyd-Warshall Algorithm Runtime vs. Input Size", fontsize=16)
-    plt.xlabel("Number of Nodes", fontsize=14)
-    plt.ylabel("Average Time (nanoseconds)", fontsize=14)
-    plt.grid(True)
-    plt.xticks(fontsize=12)
-    plt.yticks(fontsize=12)
-    plt.legend(fontsize=12)
-    plt.tight_layout()
-    plt.show()
-
-
-if __name__ == "__main__":
-    plot_floyd_warshall_data("floyd_warshall_data.csv")  # Replace if needed
+# Calculate correlation between actual and theoretical times
+print("\nCorrelation Analysis:")
+print(f"Best Case correlation: {np.corrcoef(df['best_case'], theoretical_best)[0,1]:.4f}")
+print(f"Average Case correlation: {np.corrcoef(df['average_case'], theoretical_avg)[0,1]:.4f}")
+print(f"Worst Case correlation: {np.corrcoef(df['worst_case'], theoretical_worst)[0,1]:.4f}")

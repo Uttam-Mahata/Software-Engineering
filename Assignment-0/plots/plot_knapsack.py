@@ -1,48 +1,50 @@
 import pandas as pd
-import matplotlib.pyplot as plt
 import numpy as np
+import matplotlib.pyplot as plt
+from scipy import stats
 
-def plot_knapsack_data(filename):
-    """
-    Plots Knapsack's algorithm data and theoretical complexity curves.
-    """
-    df = pd.read_csv(filename)
+# Read the performance data
+df = pd.read_csv('knapsack_performance.csv')
 
-    # Convert columns to numeric
-    df['Number of Items'] = pd.to_numeric(df['Number of Items'])
-    df['Average Time (nanoseconds)'] = pd.to_numeric(df['Average Time (nanoseconds)'])
+# Create theoretical time complexity curves
+# O(n*W) where W is proportional to n for our test cases
+sizes = df['size']
+theoretical_best = sizes * np.log(sizes)  # O(n log n) - best theoretical case
+theoretical_avg = sizes * sizes           # O(n^2) - average theoretical case
+theoretical_worst = sizes * sizes         # O(n^2) - worst theoretical case
 
-    # Create the plot
-    plt.figure(figsize=(12, 8))
+# Scale theoretical values to match actual data scales
+scale_best = np.mean(df['best_case']) / np.mean(theoretical_best)
+scale_avg = np.mean(df['average_case']) / np.mean(theoretical_avg)
+scale_worst = np.mean(df['worst_case']) / np.mean(theoretical_worst)
 
-    # Plot the measured data
-    plt.plot(df['Number of Items'], df['Average Time (nanoseconds)'], marker='o', linestyle='-', markersize=4, label="Knapsack's Measured Time")
+theoretical_best *= scale_best
+theoretical_avg *= scale_avg
+theoretical_worst *= scale_worst
 
-     # Generate data for theoretical curves
-    num_items = df['Number of Items']
-    n_c = num_items*100 # using a constant C as 100, this is a variable that was kept constant in the java code when generating data
-    n_c_squared = n_c*n_c
+# Create the plot
+plt.figure(figsize=(12, 8))
 
-    # Scale theoretical curves
-    scale_nc = np.mean(df['Average Time (nanoseconds)'].head(10)) / np.mean(n_c.head(10))
-    scale_nc2 = np.mean(df['Average Time (nanoseconds)'].head(10)) / np.mean(n_c_squared.head(10))
+# Plot actual running times
+plt.plot(sizes, df['best_case'], 'bo-', label='Actual Best Case', alpha=0.6)
+plt.plot(sizes, df['average_case'], 'go-', label='Actual Average Case', alpha=0.6)
+plt.plot(sizes, df['worst_case'], 'ro-', label='Actual Worst Case', alpha=0.6)
 
-    # Plot theoretical curves
-    plt.plot(num_items, scale_nc*n_c, linestyle = '--', label = "n*C")
-    plt.plot(num_items, scale_nc2*n_c_squared, linestyle = '-.', label = "(n*C)^2")
+# Plot theoretical curves
+plt.plot(sizes, theoretical_best, 'b--', label='Theoretical Best Case', alpha=0.4)
+plt.plot(sizes, theoretical_avg, 'g--', label='Theoretical Average Case', alpha=0.4)
+plt.plot(sizes, theoretical_worst, 'r--', label='Theoretical Worst Case', alpha=0.4)
 
-
-    # Plot
-    plt.title("Knapsack Algorithm Runtime vs. Input Size", fontsize=16)
-    plt.xlabel("Number of Items", fontsize=14)
-    plt.ylabel("Average Time (nanoseconds)", fontsize=14)
-    plt.grid(True)
-    plt.xticks(fontsize=12)
-    plt.yticks(fontsize=12)
-    plt.legend(fontsize=12)
-    plt.tight_layout()
-    plt.show()
+plt.xlabel('Input Size (n)')
+plt.ylabel('Running Time (microseconds)')
+plt.title('Knapsack Algorithm Performance Analysis')
+plt.legend()
+plt.grid(True, alpha=0.3)
 
 
-if __name__ == "__main__":
-    plot_knapsack_data("knapsack_data.csv")  # Replace if needed
+
+
+plt.savefig('knapsack_analysis.png')
+plt.close()
+
+

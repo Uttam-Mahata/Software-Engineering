@@ -1,49 +1,56 @@
 import pandas as pd
-import matplotlib.pyplot as plt
 import numpy as np
+import matplotlib.pyplot as plt
+from scipy.optimize import curve_fit
 
-def plot_merge_sort_data(filename):
-    """
-    Plots Merge Sort algorithm data and theoretical complexity curves.
-    """
-    df = pd.read_csv(filename)
+# Read the CSV file
+df = pd.read_csv('merge_sort_performance.csv')
 
-    # Convert columns to numeric
-    df['Input Size'] = pd.to_numeric(df['Input Size'])
-    df['Average Time (nanoseconds)'] = pd.to_numeric(df['Average Time (nanoseconds)'])
+# Convert nanoseconds to milliseconds
+for col in ['best_case', 'average_case', 'worst_case']:
+    df[col] = df[col] / 1_000_000
 
-    # Create the plot
-    plt.figure(figsize=(12, 8))
+# Create theoretical time complexity curves
+def nlogn(x, a, b):
+    return a * x * np.log2(x) + b
 
-    # Plot the measured data
-    plt.plot(df['Input Size'], df['Average Time (nanoseconds)'], marker='o', linestyle='-', markersize=4, label="Merge Sort's Measured Time")
+# Fit curves to the data
+x = df['size'].values
+plt.figure(figsize=(12, 8))
 
-     # Generate data for theoretical curves
-    input_sizes = df['Input Size']
-    n_log_n = input_sizes* np.log2(input_sizes)
-    n_squared = input_sizes*input_sizes
+# Plot empirical data
+plt.scatter(df['size'], df['best_case'], label='Best Case (Empirical)', alpha=0.5)
+plt.scatter(df['size'], df['average_case'], label='Average Case (Empirical)', alpha=0.5)
+plt.scatter(df['size'], df['worst_case'], label='Worst Case (Empirical)', alpha=0.5)
 
+# Fit and plot theoretical curves
+for case in ['best_case', 'average_case', 'worst_case']:
+    popt, _ = curve_fit(nlogn, x, df[case].values)
+    y_fit = nlogn(x, *popt)
+    plt.plot(x, y_fit, '--', label=f'{case.replace("_", " ").title()} (Theoretical)')
 
-    # Scale theoretical curves
-    scale_nlogn = np.mean(df['Average Time (nanoseconds)'].head(10)) / np.mean(n_log_n.head(10))
-    scale_n2 = np.mean(df['Average Time (nanoseconds)'].head(10)) / np.mean(n_squared.head(10))
+plt.xlabel('Input Size (n)')
+plt.ylabel('Time (milliseconds)')
+plt.title('Merge Sort Performance Analysis')
+plt.legend()
+plt.grid(True)
 
-     # Plot theoretical curves
-    plt.plot(input_sizes, scale_nlogn * n_log_n, linestyle='--', label="n log(n)")
-    plt.plot(input_sizes, scale_n2 * n_squared, linestyle='-.', label="n^2")
+# Calculate and print R-squared values
+def r_squared(y_true, y_pred):
+    ss_res = np.sum((y_true - y_pred) ** 2)
+    ss_tot = np.sum((y_true - np.mean(y_true)) ** 2)
+    return 1 - (ss_res / ss_tot)
 
+print("R-squared values for theoretical fit:")
+for case in ['best_case', 'average_case', 'worst_case']:
+    popt, _ = curve_fit(nlogn, x, df[case].values)
+    y_fit = nlogn(x, *popt)
+    r2 = r_squared(df[case].values, y_fit)
+    print(f"{case}: {r2:.4f}")
 
-    # Plot
-    plt.title("Merge Sort Algorithm Runtime vs. Input Size", fontsize=16)
-    plt.xlabel("Input Size", fontsize=14)
-    plt.ylabel("Average Time (nanoseconds)", fontsize=14)
-    plt.grid(True)
-    plt.xticks(fontsize=12)
-    plt.yticks(fontsize=12)
-    plt.legend(fontsize=12)
-    plt.tight_layout()
-    plt.show()
+plt.savefig('merge_sort_analysis.png')
+plt.close()
 
-
-if __name__ == "__main__":
-    plot_merge_sort_data("merge_sort_data.csv")  # Replace if needed
+# Print statistical summary
+print("\nStatistical Summary:")
+print(df.describe())
