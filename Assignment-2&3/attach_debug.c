@@ -13,6 +13,7 @@
 #include <signal.h>
 #include <stdlib.h>
 #include <time.h>
+#include <sys/types.h>
 
 volatile sig_atomic_t keep_running = 1;
 
