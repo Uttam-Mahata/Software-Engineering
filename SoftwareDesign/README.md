@@ -36,29 +36,39 @@ Class diagrams are widely used in object-oriented software design as they provid
 
 ### Example 1: Library Management System
 
-```
-+------------------------+        +------------------------+
-|        Library         |        |         Book          |
-+------------------------+        +------------------------+
-| -name: String          |        | -title: String        |
-| -location: String      |        | -author: String       |
-| -books: List<Book>     |◆------→| -isbn: String         |
-+------------------------+        | -publicationYear: int |
-| +addBook(Book): void   |        +------------------------+
-| +removeBook(Book): void|        | +getDetails(): String  |
-| +searchBook(title): Book|        | +isAvailable(): boolean|
-+------------------------+        +------------------------+
-                                          ↑
-                                          |
-                          +-----------------------------+
-                          |                             |
-              +-----------------------+    +------------------------+
-              |    FictionBook        |    |    NonFictionBook     |
-              +-----------------------+    +------------------------+
-              | -genre: String        |    | -subject: String      |
-              +-----------------------+    +------------------------+
-              | +getGenre(): String   |    | +getSubject(): String |
-              +-----------------------+    +------------------------+
+```mermaid
+classDiagram
+    class Library {
+        -name: String
+        -location: String
+        -books: List~Book~
+        +addBook(Book) void
+        +removeBook(Book) void
+        +searchBook(title) Book
+    }
+    
+    class Book {
+        -title: String
+        -author: String
+        -isbn: String
+        -publicationYear: int
+        +getDetails() String
+        +isAvailable() boolean
+    }
+    
+    class FictionBook {
+        -genre: String
+        +getGenre() String
+    }
+    
+    class NonFictionBook {
+        -subject: String
+        +getSubject() String
+    }
+    
+    Library *-- Book : contains
+    Book <|-- FictionBook : extends
+    Book <|-- NonFictionBook : extends
 ```
 
 **Explanation:**
@@ -70,42 +80,53 @@ Class diagrams are widely used in object-oriented software design as they provid
 
 ### Example 2: Online Shopping System
 
-```
-+------------------------+       +------------------------+
-|        Customer        |       |         Order         |
-+------------------------+       +------------------------+
-| -id: int               |       | -orderNumber: String  |
-| -name: String          |       | -date: Date           |
-| -email: String         |○-----→| -status: String       |
-| -address: String       |       | -items: List<Item>    |
-+------------------------+       +------------------------+
-| +placeOrder(): void    |       | +addItem(Item): void  |
-| +cancelOrder(): void   |       | +calculateTotal(): double|
-| +updateProfile(): void |       | +processPayment(): boolean|
-+------------------------+       +------------------------+
-                                         ↓
-                                 +------------------------+
-                                 |         Item          |
-                                 +------------------------+
-                                 | -itemId: int          |
-                                 | -name: String         |
-                                 | -price: double        |
-                                 | -quantity: int        |
-                                 +------------------------+
-                                 | +getSubtotal(): double|
-                                 | +updateQuantity(): void|
-                                 +------------------------+
-                                         ↑
-                            +----------------------------+
-                            |                            |
-                  +-------------------+       +-------------------+
-                  |   PhysicalItem   |       |    DigitalItem    |
-                  +-------------------+       +-------------------+
-                  | -weight: double  |       | -fileSize: double |
-                  | -dimensions: String|      | -format: String   |
-                  +-------------------+       +-------------------+
-                  | +calculateShipping()|     | +download(): void |
-                  +-------------------+       +-------------------+
+```mermaid
+classDiagram
+    class Customer {
+        -id: int
+        -name: String
+        -email: String
+        -address: String
+        +placeOrder() void
+        +cancelOrder() void
+        +updateProfile() void
+    }
+    
+    class Order {
+        -orderNumber: String
+        -date: Date
+        -status: String
+        -items: List~Item~
+        +addItem(Item) void
+        +calculateTotal() double
+        +processPayment() boolean
+    }
+    
+    class Item {
+        -itemId: int
+        -name: String
+        -price: double
+        -quantity: int
+        +getSubtotal() double
+        +updateQuantity() void
+    }
+    
+    class PhysicalItem {
+        -weight: double
+        -dimensions: String
+        +calculateShipping() void
+    }
+    
+    class DigitalItem {
+        -fileSize: double
+        -format: String
+        +download() void
+    }
+    
+    Customer o-- Order : places
+    Order *-- Item : contains
+    Item <|-- PhysicalItem : extends
+    Item <|-- DigitalItem : extends
 ```
 
 **Explanation:**
@@ -118,40 +139,59 @@ Class diagrams are widely used in object-oriented software design as they provid
 
 ### Example 3: Banking System
 
-```
-+------------------------+       +------------------------+
-|         Bank           |       |        Account        |
-+------------------------+       +------------------------+
-| -name: String          |       | -accountNumber: String|
-| -branchCode: String    |       | -balance: double      |
-| -accounts: List<Account>|◆-----→| -owner: Customer     |
-+------------------------+       +------------------------+
-| +createAccount(): void |       | +deposit(): void      |
-| +closeAccount(): void  |       | +withdraw(): void     |
-| +findAccount(): Account|       | +getBalance(): double |
-+------------------------+       +------------------------+
-                                         ↑
-                            +----------------------------+
-                            |                            |
-                  +-------------------+       +-------------------+
-                  |   SavingsAccount  |       |   CheckingAccount |
-                  +-------------------+       +-------------------+
-                  | -interestRate: double|    | -overdraftLimit: double|
-                  +-------------------+       +-------------------+
-                  | +addInterest(): void|     | +processCheck(): void|
-                  +-------------------+       +-------------------+
-
-+------------------------+       +------------------------+
-|       Customer         |◇-----→|      Transaction       |
-+------------------------+       +------------------------+
-| -id: String            |       | -transactionId: String|
-| -name: String          |       | -date: Date           |
-| -contactInfo: String   |       | -amount: double       |
-| -accounts: List<Account>|      | -type: TransactionType|
-+------------------------+       +------------------------+
-| +updateProfile(): void |       | +processTransaction(): void|
-| +requestService(): void|       | +generateReceipt(): void|
-+------------------------+       +------------------------+
+```mermaid
+classDiagram
+    class Bank {
+        -name: String
+        -branchCode: String
+        -accounts: List~Account~
+        +createAccount() void
+        +closeAccount() void
+        +findAccount() Account
+    }
+    
+    class Account {
+        -accountNumber: String
+        -balance: double
+        -owner: Customer
+        +deposit() void
+        +withdraw() void
+        +getBalance() double
+    }
+    
+    class SavingsAccount {
+        -interestRate: double
+        +addInterest() void
+    }
+    
+    class CheckingAccount {
+        -overdraftLimit: double
+        +processCheck() void
+    }
+    
+    class Customer {
+        -id: String
+        -name: String
+        -contactInfo: String
+        -accounts: List~Account~
+        +updateProfile() void
+        +requestService() void
+    }
+    
+    class Transaction {
+        -transactionId: String
+        -date: Date
+        -amount: double
+        -type: TransactionType
+        +processTransaction() void
+        +generateReceipt() void
+    }
+    
+    Bank *-- Account : manages
+    Account <|-- SavingsAccount : extends
+    Account <|-- CheckingAccount : extends
+    Customer o-- Transaction : performs
+    Customer "1" -- "*" Account : owns
 ```
 
 **Explanation:**
@@ -180,3 +220,150 @@ Class diagrams are widely used in object-oriented software design as they provid
 5. Group related classes together
 6. Use notes and comments for clarification
 7. Consider using specialized UML tools for complex diagrams
+
+## Additional Class Diagram Concepts
+
+### Relationship Types in Detail
+
+1. **Association**
+   - Basic relationship between classes
+   - Represented by a solid line
+   - Can be unidirectional or bidirectional
+   - Can include multiplicity (1, 0..1, *, 1..*, etc.)
+
+```mermaid
+classDiagram
+    class Professor {
+        +teaches()
+    }
+    class Student {
+        +learns()
+    }
+    Professor "1" -- "*" Student : teaches
+```
+
+2. **Aggregation**
+   - Represents "has-a" relationship
+   - Weak ownership (parts can exist independently)
+   - Shown with an empty diamond
+
+```mermaid
+classDiagram
+    class University {
+        +name: String
+    }
+    class Department {
+        +name: String
+    }
+    University o-- Department : has
+```
+
+3. **Composition**
+   - Strong "contains" relationship
+   - Strong ownership (parts cannot exist without the whole)
+   - Shown with a filled diamond
+
+```mermaid
+classDiagram
+    class Car {
+        +model: String
+    }
+    class Engine {
+        +type: String
+    }
+    Car *-- Engine : contains
+```
+
+### Abstract Classes and Interfaces
+
+```mermaid
+classDiagram
+    class Shape {
+        <<abstract>>
+        +area()* double
+        +perimeter()* double
+    }
+    class Circle {
+        -radius: double
+        +area() double
+        +perimeter() double
+    }
+    class Rectangle {
+        -width: double
+        -height: double
+        +area() double
+        +perimeter() double
+    }
+    Shape <|-- Circle
+    Shape <|-- Rectangle
+```
+
+## Common Design Patterns in Class Diagrams
+
+### 1. Singleton Pattern
+
+```mermaid
+classDiagram
+    class Singleton {
+        -instance: Singleton
+        -Singleton()
+        +getInstance() Singleton
+    }
+```
+
+### 2. Factory Pattern
+
+```mermaid
+classDiagram
+    class Factory {
+        +createProduct() Product
+    }
+    class Product {
+        <<interface>>
+    }
+    class ConcreteProductA
+    class ConcreteProductB
+    
+    Factory ..> Product
+    Product <|.. ConcreteProductA
+    Product <|.. ConcreteProductB
+```
+
+## Tools for Creating Class Diagrams
+
+1. **Draw.io** (diagrams.net)
+   - Free, web-based and desktop application
+   - Extensive UML support
+   - Easy to use and share
+
+2. **PlantUML**
+   - Text-based diagram creation
+   - Good for version control
+   - Integrates with many IDEs
+
+3. **Mermaid**
+   - Markdown-based diagrams
+   - Great for documentation
+   - GitHub native support
+
+4. **Enterprise Architect**
+   - Professional UML tool
+   - Comprehensive features
+   - Code generation capabilities
+
+## Tips for Effective Class Diagrams
+
+1. **Layout and Organization**
+   - Arrange classes logically
+   - Group related classes together
+   - Minimize crossing lines
+   
+2. **Level of Detail**
+   - Include only relevant attributes and methods
+   - Use appropriate visibility modifiers
+   - Consider your audience
+
+3. **Documentation**
+   - Add notes for complex relationships
+   - Include constraints where necessary
+   - Document assumptions
