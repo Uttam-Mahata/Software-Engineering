@@ -1,0 +1,87 @@
+% Custom style definitions for Bus Scheduling and Booking System SRS document
+% Include this file using \usepackage{srsstyle}
+
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{srsstyle}[2025/03/24 Custom SRS styling]
+
+% Additional colors for requirement priorities
+\definecolor{critical}{RGB}{192,0,0}
+\definecolor{high}{RGB}{237,125,49}
+\definecolor{medium}{RGB}{112,173,71}
+\definecolor{low}{RGB}{91,155,213}
+
+% Create a styled box for requirements
+\newcommand{\styledRequirement}[3]{
+  \begin{tcolorbox}[
+    colback=gray!5,
+    colframe=black!70,
+    sharp corners,
+    boxrule=0.5pt,
+    leftrule=3pt,
+    arc=0pt,
+    outer arc=0pt,
+    title={\textbf{REQ-#1}},
+    fonttitle=\bfseries
+  ]
+  \textbf{Description:} #2 \\
+  \textbf{Priority:} 
+  \ifstrequal{#3}{Critical}{\textcolor{critical}{#3}}{}%
+  \ifstrequal{#3}{High}{\textcolor{high}{#3}}{}%
+  \ifstrequal{#3}{Medium}{\textcolor{medium}{#3}}{}%
+  \ifstrequal{#3}{Low}{\textcolor{low}{#3}}{}%
+  \end{tcolorbox}
+}
+
+% Create a styled use case box
+\newcommand{\usecase}[3]{
+  \begin{tcolorbox}[
+    colback=usecasecolor,
+    colframe=black!70,
+    rounded corners,
+    title={\textbf{Use Case: #1}},
+    fonttitle=\bfseries
+  ]
+  \textbf{Actor:} #2 \\
+  \textbf{Description:} #3
+  \end{tcolorbox}
+}
+
+% Create a stakeholder table
+\newcommand{\stakeholdertable}[1]{
+  \begin{center}
+    \begin{tabularx}{\textwidth}{|l|X|X|}
+      \hline
+      \textbf{Stakeholder} & \textbf{Role} & \textbf{Interests/Concerns} \\
+      \hline
+      #1
+      \hline
+    \end{tabularx}
+  \end{center}
+}
+
+% Create a custom chapter style
+\newcommand{\customchapter}[1]{
+  \chapter{#1}
+  \begin{center}
+    \rule{0.5\textwidth}{1pt}
+  \end{center}
+}
+
+% Command for creating traceability matrix
+\newcommand{\traceabilitymatrix}[1]{
+  \begin{center}
+    \begin{tabular}{|p{3cm}|p{3cm}|p{3cm}|p{3cm}|}
+      \hline
+      \textbf{Requirement ID} & \textbf{Use Case ID} & \textbf{Test Case ID} & \textbf{Design Element} \\
+      \hline
+      #1
+    \end{tabular}
+  \end{center}
+}
+
+% Create a custom glossary entry
+\newcommand{\glossaryentry}[2]{
+  \noindent\textbf{#1:} #2\par
+}
+
+\endinput

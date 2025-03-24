@@ -1,0 +1,354 @@
+\documentclass[12pt,a4paper]{report}
+
+% Packages
+\usepackage{geometry}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{tabularx}
+\usepackage{enumerate}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{float}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{booktabs}
+\usepackage{pifont}
+
+% Page layout
+\geometry{margin=1in}
+
+% Hyperlink configuration
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,
+    urlcolor=blue,
+}
+
+% Header and footer configuration
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{Bus Scheduling and Booking System}
+\fancyhead[R]{SRS Document}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{1pt}
+\renewcommand{\footrulewidth}{0.5pt}
+
+% Title formatting
+\titleformat{\chapter}[display]
+{\normalfont\huge\bfseries}{\chaptertitlename\ \thechapter}{20pt}{\Huge}
+\titlespacing*{\chapter}{0pt}{-30pt}{20pt}
+
+% Define a function for requirements
+\newcommand{\requirement}[3]{
+    \noindent\textbf{REQ-#1:} #2 \\
+    \textit{Priority:} #3 \\
+}
+
+% Color definitions for use cases
+\definecolor{actorcolor}{RGB}{220,230,242}
+\definecolor{systemcolor}{RGB}{255,242,204}
+\definecolor{usecasecolor}{RGB}{226,239,218}
+
+\begin{document}
+
+\begin{titlepage}
+    \centering
+    \vspace*{1cm}
+    \includegraphics[width=0.5\textwidth]{example-image}\\[1cm]
+    
+    \textsc{\LARGE Software Engineering Laboratory}\\[0.5cm]
+    \textsc{\Large Assignment 5: Requirement Analysis}\\[0.5cm]
+    
+    \rule{\linewidth}{0.2mm}\\[0.4cm]
+    {\huge\bfseries Software Requirements Specification\\[0.4cm] 
+    for\\[0.4cm]
+    Bus Scheduling and Booking System}\\[0.4cm]
+    \rule{\linewidth}{0.2mm}\\[1.5cm]
+    
+    \begin{minipage}{0.4\textwidth}
+        \begin{flushleft}
+            \large
+            \textbf{Submitted By:}\\
+            Name 1\\
+            Name 2\\
+            Name 3\\
+            Name 4\\
+        \end{flushleft}
+    \end{minipage}
+    ~
+    \begin{minipage}{0.4\textwidth}
+        \begin{flushright}
+            \large
+            \textbf{Submitted To:}\\
+            Professor Name\\
+            Department of Computer Science\\
+        \end{flushright}
+    \end{minipage}\\[2cm]
+    
+    {\large \today}
+    
+    \vfill
+\end{titlepage}
+
+\tableofcontents
+
+\chapter{Introduction}
+\section{Purpose}
+This Software Requirements Specification (SRS) document provides a detailed description of the requirements for the Bus Scheduling and Booking System. It outlines the functionalities, constraints, and objectives of the system to be developed.
+
+\section{Document Conventions}
+This document follows the IEEE 830-1998 standard for Software Requirements Specifications. The following conventions are used:
+\begin{itemize}
+    \item Requirements are uniquely identified using the format REQ-XXX-YY where XXX represents the module and YY is a sequential number.
+    \item Priorities are classified as Critical, High, Medium, or Low.
+    \item Use cases are documented using standard UML notation.
+\end{itemize}
+
+\section{Project Scope}
+The Bus Scheduling and Booking System aims to automate and streamline the process of bus schedule management, ticket booking, and related operations. The system will serve various stakeholders including customers, booking clerks, supervisors, and managers.
+
+\section{Definitions, Acronyms, and Abbreviations}
+\begin{tabularx}{\textwidth}{|l|X|}
+    \hline
+    \textbf{Term} & \textbf{Definition} \\
+    \hline
+    SRS & Software Requirements Specification \\
+    \hline
+    UML & Unified Modeling Language \\
+    \hline
+    GUI & Graphical User Interface \\
+    \hline
+    DBMS & Database Management System \\
+    \hline
+    API & Application Programming Interface \\
+    \hline
+    UI & User Interface \\
+    \hline
+    UC & Use Case \\
+    \hline
+\end{tabularx}
+
+\chapter{Overall Description}
+
+\section{Product Perspective}
+The Bus Scheduling and Booking System is a standalone software product designed to manage the operations of a bus service company. It will interface with payment gateways for financial transactions and may communicate with GPS tracking systems for real-time bus location updates.
+
+\section{Product Features}
+The primary features of the system include:
+\begin{itemize}
+    \item User registration and authentication
+    \item Bus schedule management
+    \item Ticket booking and reservation
+    \item Seat selection and management
+    \item Payment processing
+    \item Cancellation and refund handling
+    \item Report generation and analytics
+    \item Admin dashboard for operational management
+\end{itemize}
+
+\section{User Classes and Characteristics}
+\begin{description}
+    \item[Customers] End users who book tickets and use the bus service. They have varying levels of technical expertise and require an intuitive interface.
+    \item[Booking Clerks] Staff responsible for ticket bookings, inquiries, and customer service. They require efficient tools to process transactions quickly.
+    \item[Supervisors] Operational staff who manage schedules, assign drivers, and handle day-to-day operations. They need comprehensive views of the system.
+    \item[Managers] Decision-makers who require access to analytics, reports, and administrative functions to manage the business effectively.
+\end{description}
+
+\section{Operating Environment}
+The system will operate in the following environment:
+\begin{itemize}
+    \item Web-based application accessible via modern browsers
+    \item Mobile application for Android and iOS platforms
+    \item Backend server running on Linux/Windows with database support
+    \item Integration with common payment gateways
+    \item Compatibility with standard GPS tracking systems
+\end{itemize}
+
+\section{Design and Implementation Constraints}
+\begin{itemize}
+    \item The system must be developed using responsive design principles to ensure usability on various devices
+    \item Security measures must comply with industry standards for handling personal and payment information
+    \item Database design must ensure data integrity and allow for efficient querying
+    \item The system should be scalable to accommodate increasing user load and data volume
+\end{itemize}
+
+\section{Assumptions and Dependencies}
+\begin{itemize}
+    \item Reliable internet connectivity is assumed for all users
+    \item Payment gateway APIs are assumed to be reliable and secure
+    \item GPS tracking data is assumed to be available for real-time bus location updates
+    \item The organization has the necessary hardware infrastructure to host the system
+\end{itemize}
+
+\chapter{Specific Requirements}
+
+\section{External Interface Requirements}
+
+\subsection{User Interfaces}
+\begin{itemize}
+    \item The system shall provide a responsive web interface accessible via standard browsers
+    \item The mobile application shall follow platform-specific design guidelines for Android and iOS
+    \item All interfaces shall support basic accessibility features
+    \item The administrative dashboard shall provide comprehensive views with filtering and sorting capabilities
+\end{itemize}
+
+\subsection{Hardware Interfaces}
+\begin{itemize}
+    \item The system shall be compatible with standard printers for ticket printing
+    \item GPS tracking devices in buses shall interface with the system for location updates
+    \item QR code scanners at bus stations shall interface with the system for ticket validation
+\end{itemize}
+
+\subsection{Software Interfaces}
+\begin{itemize}
+    \item The system shall interface with payment gateway APIs for processing transactions
+    \item Database interaction shall be through a secure, optimized DBMS interface
+    \item External mapping services shall be integrated for route visualization
+    \item Email and SMS gateways shall be used for notifications
+\end{itemize}
+
+\section{Functional Requirements}
+
+\subsection{Customer Management Module}
+
+\requirement{CM-01}{The system shall allow users to register with email or mobile number verification}{High}
+
+\requirement{CM-02}{The system shall enable users to log in using their credentials or through social media authentication}{High}
+
+\requirement{CM-03}{The system shall allow users to update their profile information including name, contact details, and preferences}{Medium}
+
+\requirement{CM-04}{The system shall maintain a history of bookings for each registered user}{Medium}
+
+\requirement{CM-05}{The system shall implement password recovery mechanisms through email or mobile verification}{High}
+
+\subsection{Booking System Module}
+
+\requirement{BS-01}{The system shall display available buses based on source, destination, and date of travel}{Critical}
+
+\requirement{BS-02}{The system shall allow users to select seats from available options on a bus layout}{Critical}
+
+\requirement{BS-03}{The system shall process payments through multiple methods including credit/debit cards, net banking, and digital wallets}{Critical}
+
+\requirement{BS-04}{The system shall generate a unique booking reference for each successful booking}{High}
+
+\requirement{BS-05}{The system shall allow users to cancel bookings and process refunds according to cancellation policy}{High}
+
+\requirement{BS-06}{The system shall send booking confirmations and tickets via email and SMS}{Medium}
+
+\subsection{Bus Scheduling Module}
+
+\requirement{SCH-01}{The system shall allow administrators to create and manage bus routes}{Critical}
+
+\requirement{SCH-02}{The system shall enable the creation and modification of bus schedules for each route}{Critical}
+
+\requirement{SCH-03}{The system shall facilitate the assignment of drivers and vehicles to scheduled routes}{High}
+
+\requirement{SCH-04}{The system shall track and notify vehicle maintenance schedules}{Medium}
+
+\requirement{SCH-05}{The system shall allow for temporary or permanent changes to routes and schedules}{High}
+
+\subsection{Reporting and Analytics Module}
+
+\requirement{RA-01}{The system shall generate daily, weekly, and monthly occupancy reports}{High}
+
+\requirement{RA-02}{The system shall provide revenue analysis by route, time period, and customer segments}{High}
+
+\requirement{RA-03}{The system shall track and analyze route performance metrics including punctuality and customer feedback}{Medium}
+
+\requirement{RA-04}{The system shall generate customizable reports based on user-defined parameters}{Medium}
+
+\section{Non-Functional Requirements}
+
+\subsection{Performance Requirements}
+\begin{itemize}
+    \item The system shall support at least 1000 concurrent users without performance degradation
+    \item Page load time shall not exceed 3 seconds under normal conditions
+    \item Search queries shall return results within 2 seconds
+    \item The system shall be able to process up to 10,000 bookings per day
+\end{itemize}
+
+\subsection{Security Requirements}
+\begin{itemize}
+    \item All user passwords shall be stored using strong encryption
+    \item Payment information shall be processed securely using industry-standard protocols
+    \item The system shall implement role-based access control
+    \item All sensitive data transmissions shall use secure protocols
+    \item The system shall maintain audit logs for all critical transactions
+\end{itemize}
+
+\subsection{Reliability Requirements}
+\begin{itemize}
+    \item The system shall have an uptime of at least 99.5\%
+    \item Data backups shall be performed daily with a retention policy of 30 days
+    \item The system shall implement error handling mechanisms to prevent crashes
+    \item Recovery from failures shall be automatic where possible
+\end{itemize}
+
+\subsection{Usability Requirements}
+\begin{itemize}
+    \item The user interface shall be intuitive, requiring minimal training for basic operations
+    \item Help documentation shall be easily accessible from all screens
+    \item The system shall provide meaningful error messages
+    \item The system shall be usable by people with basic disabilities
+\end{itemize}
+
+\chapter{Use Case Diagrams}
+
+\section{Customer Management Use Cases}
+[Insert use case diagram for Customer Management here]
+
+\section{Booking System Use Cases}
+[Insert use case diagram for Booking System here]
+
+\section{Bus Scheduling Use Cases}
+[Insert use case diagram for Bus Scheduling here]
+
+\section{Reporting and Analytics Use Cases}
+[Insert use case diagram for Reporting and Analytics here]
+
+\chapter{System Constraints and Assumptions}
+
+\section{Constraints}
+\begin{itemize}
+    \item Development budget constraints may limit the implementation of certain features
+    \item The system must comply with local regulations regarding data privacy and financial transactions
+    \item Integration with existing legacy systems may require additional effort
+    \item The system must be developed and deployed within a 6-month timeframe
+\end{itemize}
+
+\section{Assumptions}
+\begin{itemize}
+    \item Users have basic computer literacy and familiarity with online booking systems
+    \item The organization will provide necessary hardware infrastructure
+    \item Required third-party services (payment gateways, SMS providers) will remain available
+    \item GPS tracking devices will be installed in all buses
+\end{itemize}
+
+\chapter{Appendices}
+
+\section{Supporting Documentation}
+\begin{itemize}
+    \item Glossary of Terms
+    \item Detailed Process Workflows
+    \item Database Schema
+    \item UI Mockups
+    \item Testing Strategy
+\end{itemize}
+
+\section{Team Information}
+\begin{tabularx}{\textwidth}{|l|X|X|}
+    \hline
+    \textbf{Name} & \textbf{Role} & \textbf{Contribution} \\
+    \hline
+    Name 1 & Team Leader & Overall coordination, requirement analysis \\
+    \hline
+    Name 2 & System Analyst & Use case development, functional requirements \\
+    \hline
+    Name 3 & Documentation & SRS preparation, diagrams \\
+    \hline
+    Name 4 & Quality Assurance & Requirement validation, consistency checks \\
+    \hline
+\end{tabularx}
+
+\end{document}
